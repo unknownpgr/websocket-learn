@@ -4,31 +4,44 @@
 <head>
   <title>Socket.IO chat</title>
   <style>
+    html {
+      height: 100%;
+    }
+
     body {
       margin: 0;
-      padding-bottom: 3rem;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
     }
 
     #form {
       background: rgba(0, 0, 0, 0.15);
       padding: 0.25rem;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
       display: flex;
       height: 3rem;
       box-sizing: border-box;
       backdrop-filter: blur(10px);
     }
 
-    #input {
+    .inputtext {
       border: none;
       padding: 0 1rem;
-      flex-grow: 1;
       border-radius: 2rem;
       margin: 0.25rem;
+    }
+
+    #chatName {
+      width: 5rem;
+      display: flex;
+      background-color: white;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #input {
+      flex-grow: 1;
     }
 
     #input:focus {
@@ -49,6 +62,8 @@
       list-style-type: none;
       margin: 0;
       padding: 0;
+      overflow-y: scroll;
+      flex-grow: 1;
     }
 
     #messages>li {
@@ -64,26 +79,35 @@
 <body>
   <ul id="messages"></ul>
   <form id="form" action="">
-    <input id="input" autocomplete="off" /><button>Send</button>
+    <span class="inputtext" id="chatName"></span>
+    <input class="inputtext" id="input" autocomplete="off" />
+    <button>Send</button>
   </form>
 
   <script src="socket.io.min.js"></script>
   <script>
-    var socket = io();
+    let name = (Math.random() + '0000').substr(2, 5);
+    chatName.innerText = name;
 
+    var socket = io();
     var form = document.getElementById('form');
     var input = document.getElementById('input');
+
+    socket.emit('new user', name);
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       if (input.value) {
-        socket.emit('chat message', input.value);
+        socket.emit('chat message', name + ' : ' + input.value);
         input.value = '';
       }
     });
 
     socket.on('chat reply', (msg) => {
-      messages.innerHTML += '<div>' + msg + '</div>'
+      var now = new Date();
+      var time = now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
+      messages.innerHTML += '<li>[' + time + '] ' + msg + '</li>'
+      messages.scrollTop = messages.scrollHeight;
     })
   </script>
 </body>

@@ -17,7 +17,11 @@ app.get('/', (req, res) => {
 
 io.on('connection', (socket) => {
   socket.on('chat message', (msg) => {
-    io.emit('chat reply', 'SERVER:You sent ' + msg);
+    io.emit('chat reply', msg);
+  });
+
+  socket.on('new user', (msg) => {
+    io.emit('chat reply', 'New user ' + msg + ' joined this chatroom.');
   });
 });
 
