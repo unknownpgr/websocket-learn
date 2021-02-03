@@ -21,7 +21,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('new user', (msg) => {
-    io.emit('chat reply', 'New user ' + msg + ' joined this chatroom.');
+    io.emit('chat reply', `New user ${msg} joined this chatroom.`);
   });
 });
 
