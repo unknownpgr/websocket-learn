@@ -95,6 +95,14 @@
 
     socket.emit('new user', name);
 
+    socket.emit('list', '')
+    socket.on('list', (msg) => {
+      console.log(msg)
+      messages.innerHTML += '<li>' + msg + '</li>'
+      messages.scrollTop = messages.scrollHeight;
+    })
+
+
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       if (input.value) {
