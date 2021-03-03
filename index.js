@@ -81,8 +81,8 @@ io.on('connection', (socket) => {
     name = name.replace(/script/g, 's c r i p t');
     let user = userFind(socket.id);
     if (!user) return;
-    io.emit('notify', `User ${user.name} changed name to ${newName}`);
-    user.name = newName;
+    io.emit('notify', `User ${user.name} changed name to ${name}`);
+    user.name = name;
     io.emit('list', users);
   });
 });
