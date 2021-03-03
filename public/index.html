@@ -32,6 +32,7 @@
       padding: 0 1rem;
       border-radius: 2rem;
       margin: 0.25rem;
+      outline: none;
     }
 
     #chatName {
@@ -45,10 +46,6 @@
 
     #input {
       flex-grow: 1;
-    }
-
-    #input:focus {
-      outline: none;
     }
 
     #form>button {
@@ -103,6 +100,12 @@
         width: 100%;
         height: 70%;
       }
+    }
+
+    .noti {
+      font-style: italic;
+      text-align: center;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -173,7 +176,7 @@
 
     socket.on('notify', (data) => {
       let time = getDateStr();
-      messages.innerHTML += `<li>[${time}][Server] ${data}</li>`
+      messages.innerHTML += `<li class="noti">[${time}] ${data}</li>`
       messages.scrollTop = messages.scrollHeight;
     })
   </script>
