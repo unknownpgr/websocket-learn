@@ -49,12 +49,12 @@ io.on('connection', (socket) => {
   socket.on('chat', (msg) => {
     let user = userFind(socket.id);
     if (!user) return;
-    msg = msg.replace(/script/g, 's c r i p t');
+    msg = msg.replace(/script/g, 's&#8205;c&#8205;r&#8205;i&#8205;p&#8205;t');
     io.emit('chat', { user, msg: msg });
   });
 
   socket.on('new user', (name) => {
-    name = name.replace(/script/g, 's c r i p t');
+    name = name.replace(/script/g, 's&#8205;c&#8205;r&#8205;i&#8205;p&#8205;t');
     userAdd({ id: socket.id, name, x: 0, y: 0 });
     io.emit('notify', `User ${name} connected.`);
     io.emit('list', users);
@@ -78,7 +78,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('rename', name => {
-    name = name.replace(/script/g, 's c r i p t');
+    name = name.replace(/script/g, 's&#8205;c&#8205;r&#8205;i&#8205;p&#8205;t');
     let user = userFind(socket.id);
     if (!user) return;
     io.emit('notify', `User ${user.name} changed name to ${name}`);
