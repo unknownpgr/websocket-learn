@@ -1,8 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-  <title>Socket.IO chat</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZETIN :: 챗방</title>
+
   <style>
     html {
       height: 100%;
@@ -11,8 +15,6 @@
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
       height: 100%;
     }
 
@@ -73,16 +75,51 @@
     #messages>li:nth-child(odd) {
       background: #efefef;
     }
+
+    #container {
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
+
+    #main {
+      display: flex;
+      flex-direction: column;
+      width: 70%;
+    }
+
+    #sidebar {
+      flex-grow: 1;
+      overflow-y: scroll;
+    }
+
+    @media screen and (max-width: 768px) {
+      #container {
+        flex-direction: column;
+      }
+
+      #main {
+        width: 100%;
+        height: 70%;
+      }
+    }
   </style>
 </head>
 
 <body>
-  <ul id="messages"></ul>
-  <form id="form" action="">
-    <span class="inputtext" id="chatName"></span>
-    <input class="inputtext" id="input" autocomplete="off" />
-    <button>Send</button>
-  </form>
+  <div id="container">
+    <div id="main">
+      <ul id="messages"></ul>
+      <form id="form" action="">
+        <span class="inputtext" id="chatName"></span>
+        <input class="inputtext" id="input" autocomplete="off" />
+        <button>Send</button>
+      </form>
+    </div>
+    <div id="sidebar">
+      <ul id="userlist"></ul>
+    </div>
+  </div>
 
   <script src="socket.io.min.js"></script>
   <script>
@@ -93,28 +130,43 @@
     var form = document.getElementById('form');
     var input = document.getElementById('input');
 
-    socket.emit('new user', name);
-
-    socket.emit('list', '')
-    socket.on('list', (msg) => {
-      console.log(msg)
-      messages.innerHTML += '<li>' + msg + '</li>'
-      messages.scrollTop = messages.scrollHeight;
+    socket.on('list', list => {
+      let listHTML = ''
+      list.forEach(item => {
+        listHTML += `<li>${item.name}(${item.id.substring(0, 4)})</li>`
+      })
+      userlist.innerHTML = listHTML;
     })
 
+    socket.emit('new user', name);
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       if (input.value) {
-        socket.emit('chat message', name + ' : ' + input.value);
+        socket.emit('chat', input.value);
         input.value = '';
       }
     });
 
-    socket.on('chat reply', (msg) => {
-      var now = new Date();
-      var time = now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
-      messages.innerHTML += '<li>[' + time + '] ' + msg + '</li>'
+    function getDateStr() {
+      let now = new Date();
+
+      return ('0' + now.getHours()).slice(-2)
+        + ":"
+        + ('0' + now.getMinutes()).slice(-2)
+        + ":"
+        + ('0' + now.getSeconds()).slice(-2);
+    }
+
+    socket.on('chat', (data) => {
+      let time = getDateStr();
+      messages.innerHTML += `<li>[${time}][${data.user.name}] ${data.msg}</li>`
+      messages.scrollTop = messages.scrollHeight;
+    })
+
+    socket.on('notify', (data) => {
+      let time = getDateStr();
+      messages.innerHTML += `<li>[${time}][Server] ${data}</li>`
       messages.scrollTop = messages.scrollHeight;
     })
   </script>
