@@ -170,13 +170,18 @@
 
     socket.on('chat', (data) => {
       let time = getDateStr();
-      messages.innerHTML += `<li>[${time}][${data.user.name}] ${data.msg}</li>`
+      let li = document.createElement('li');
+      li.innerHTML = `[${time}][${data.user.name}] ${data.msg}`;
+      messages.appendChild(li);
       messages.scrollTop = messages.scrollHeight;
     })
 
     socket.on('notify', (data) => {
       let time = getDateStr();
-      messages.innerHTML += `<li class="noti">[${time}] ${data}</li>`
+      let li = document.createElement('li');
+      li.className = 'noti'
+      li.innerHTML = `[${time}] ${data}`;
+      messages.appendChild(li);
       messages.scrollTop = messages.scrollHeight;
     })
   </script>
