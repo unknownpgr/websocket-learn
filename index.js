@@ -48,18 +48,12 @@ io.on('connection', (socket) => {
 
   socket.on('chat', (msg) => {
     let user = userFind(socket.id);
-    io.emit('chat', {
-      user: {
-        id: user.id,
-        name: user.name,
-        x: 0,
-        y: 0
-      }, msg: msg
-    });
+    if (!user) return;
+    io.emit('chat', { user, msg: msg });
   });
 
   socket.on('new user', (msg) => {
-    userAdd({ id: socket.id, name: msg });
+    userAdd({ id: socket.id, name: msg, x: 0, y: 0 });
     io.emit('notify', `User ${msg} connected.`);
     io.emit('list', users);
   });
@@ -69,14 +63,24 @@ io.on('connection', (socket) => {
     if (!user) return;
     io.emit('notify', 'User ' + user.name + " disconnected");
     userRemove(socket.id);
+    io.emit('list', users);
   });
 
   socket.on('move', data => {
     let user = userFind(socket.id);
+    if (!user) return;
     let { x, y } = data;
     user.x = x;
     user.y = y;
     io.emit('move', user);
+  });
+
+  socket.on('rename', newName => {
+    let user = userFind(socket.id);
+    if (!user) return;
+    io.emit('notify', `User ${user.name} changed name to ${newName}`);
+    user.name = newName;
+    io.emit('list', users);
   });
 });
 

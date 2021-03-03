@@ -39,6 +39,7 @@
       display: flex;
       background-color: white;
       align-items: center;
+      text-align: center;
       justify-content: center;
     }
 
@@ -110,8 +111,8 @@
   <div id="container">
     <div id="main">
       <ul id="messages"></ul>
-      <form id="form" action="">
-        <span class="inputtext" id="chatName"></span>
+      <form id="form" action="" onsubmit="send(event)">
+        <input class="inputtext" id="chatName" onblur="rename(event)"></input>
         <input class="inputtext" id="input" autocomplete="off" />
         <button>Send</button>
       </form>
@@ -124,7 +125,7 @@
   <script src="socket.io.min.js"></script>
   <script>
     let name = (Math.random() + '0000').substr(2, 5);
-    chatName.innerText = name;
+    chatName.value = name;
 
     var socket = io();
     var form = document.getElementById('form');
@@ -140,13 +141,19 @@
 
     socket.emit('new user', name);
 
-    form.addEventListener('submit', function (e) {
+    function send(e) {
       e.preventDefault();
       if (input.value) {
         socket.emit('chat', input.value);
         input.value = '';
       }
-    });
+    }
+
+    function rename(e) {
+      if (e.target.value) {
+        socket.emit('rename', e.target.value);
+      }
+    }
 
     function getDateStr() {
       let now = new Date();
